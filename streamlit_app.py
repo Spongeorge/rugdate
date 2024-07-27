@@ -13,15 +13,15 @@ inference_transforms = transforms.Compose([
 
 url = 'https://drive.google.com/uc?id=1-4A9w60IkPSxsMkEiT3GYtr1RgFBhvD1'
 
-    output = 'model_state_dict.pth'
+output = 'model_state_dict.pth'
 
-    gdown.download(url, output, quiet=False)
+gdown.download(url, output, quiet=False)
 
-    model = timm.create_model('vit_huge_patch14_224.orig_in21k', pretrained=True)
+model = timm.create_model('vit_huge_patch14_224.orig_in21k', pretrained=True)
 
-    model.head = torch.nn.Linear(1280, 2)
+model.head = torch.nn.Linear(1280, 2)
 
-    model.load_state_dict(state_dict)
+model.load_state_dict(state_dict)
 
 def pass_to_cv_model(image):
     # Placeholder function that simulates model prediction
