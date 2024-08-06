@@ -29,21 +29,21 @@ def main():
     sample_image_2 = "sample2.jpg"
     sample_image_3 = "sample3.jpg"
 
-    size = (224, 224)
+
 
     col1, col2, col3 = st.columns(3)
     with col1:
         if st.button("Chinese insignia, 1500s"):
             selected_image = Image.open(sample_image_1)
-        st.image(Image.open(sample_image_1).resize(size))
+        st.image(Image.open(sample_image_1))
     with col2:
         if st.button("Spanish silk, late 1500s"):
             selected_image = Image.open(sample_image_2)
-        st.image(Image.open(sample_image_2).resize(size))
+        st.image(Image.open(sample_image_2))
     with col3:
         if st.button("Italian silk, late 1600s"):
             selected_image = Image.open(sample_image_3)
-        st.image(Image.open(sample_image_3).resize(size))
+        st.image(Image.open(sample_image_3))
 
     # Display uploaded image or selected sample image
     if uploaded_image:
