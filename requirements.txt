@@ -1,5 +1,2 @@
 streamlit
 gdown
-timm
-torchvision
-torch

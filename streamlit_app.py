@@ -9,7 +9,7 @@ CONSTANT_MEAN_YEAR = 1610.1647039974473
 CONSTANT_STD_YER = 389.20546577157154
 
 def pass_to_cv_model(image):
-    endpoint = get_inference_endpoint("vit-textile-dating-lube-kkf", token=False)
+    endpoint = get_inference_endpoint("vit-textile-dating-lube-kkf")
 
     outputs = endpoint.client.image_classification(image)
 
