@@ -1,32 +1,20 @@
 import streamlit as st
 from PIL import Image
 import gdown
-import torch
-import timm
 from torchvision import transforms
+import requests
+from huggingface_hub import get_inference_endpoint
 
-inference_transforms = transforms.Compose([
-    transforms.Resize((224, 224)),
-    transforms.ToTensor(),
-    transforms.Normalize(mean=[0.5670, 0.5327, 0.4973], std=[0.2165, 0.2195, 0.2175])
-    ])
-
-url = 'https://drive.google.com/uc?id=1-4A9w60IkPSxsMkEiT3GYtr1RgFBhvD1'
-
-output = 'model_state_dict.pth'
-
-gdown.download(url, output, quiet=False)
-
-model = timm.create_model('vit_huge_patch14_224.orig_in21k', pretrained=True)
-
-model.head = torch.nn.Linear(1280, 2)
-
-model.load_state_dict(state_dict)
+CONSTANT_MEAN_YEAR = 1610.1647039974473
+CONSTANT_STD_YER = 389.20546577157154
 
 def pass_to_cv_model(image):
-    # Placeholder function that simulates model prediction
-    # Replace with your actual model prediction logic
-    return model(inference_transforms(image))
+    endpoint = get_inference_endpoint("vit-textile-dating-lube-kkf")
+
+    outputs = endpoint.client.image_classification(image)
+
+    return [(output * CONSTANT_STD_YER) + CONSTANT_MEAN_YEAR for output in outputs]
+
 
 def main():
 
