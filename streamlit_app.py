@@ -96,9 +96,8 @@ def check_endpoint_status():
         return False
 
 def spin_up_endpoint():
-    """Send a dummy request to spin up the endpoint."""
     dummy_data = {
-        "inputs": "This is a test input to spin up the instance."
+        "inputs": "This is a test input to spin up an instance."
     }
     try:
         response = requests.post(API_URL, headers=headers, json=dummy_data)
@@ -110,8 +109,7 @@ def spin_up_endpoint():
         return False
 
 def wait_for_endpoint():
-    """Wait until the endpoint is fully available."""
-    with st.spinner("Waiting for the endpoint to be ready..."):
+    with st.spinner("Spinning up an endpoint... Hold on..."):
         while not check_endpoint_status():
             time.sleep(5)
     st.write("Endpoint is ready.")
