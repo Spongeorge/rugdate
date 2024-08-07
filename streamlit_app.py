@@ -58,20 +58,22 @@ def main():
     sample_image_2 = "sample2.jpg"
     sample_image_3 = "sample3.jpg"
 
-    selected_image = None
 
     col1, col2, col3 = st.columns(3)
     with col1:
         if st.button("Egyptian Textile, 500-700"):
             st.session_state.selected_image = Image.open(sample_image_1)
+            st.session_state.uploaded_image = None
         st.image(Image.open(sample_image_1))
     with col2:
         if st.button("Iranian Khorjin, 1870-1900"):
             st.session_state.selected_image = Image.open(sample_image_2)
+            st.session_state.uploaded_image = None
         st.image(Image.open(sample_image_2))
     with col3:
         if st.button("Italian Silk, late 1600s"):
             st.session_state.selected_image = Image.open(sample_image_3)
+            st.session_state.uploaded_image = None
         st.image(Image.open(sample_image_3))
 
     image = Image.open(st.session_state.uploaded_image) if st.session_state.uploaded_image else st.session_state.selected_image
