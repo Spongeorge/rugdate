@@ -61,7 +61,7 @@ def main():
 
     col1, col2, col3 = st.columns(3)
     with col1:
-        if st.button("Egyptian Textile, 500-700"):
+        if st.button("Egyptian Textile, 400-600"):
             st.session_state.selected_image = Image.open(sample_image_1)
             st.session_state.uploaded_image = None
         st.image(Image.open(sample_image_1))
