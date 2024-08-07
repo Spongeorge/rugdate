@@ -22,6 +22,8 @@ parameters = {
 
 def pass_to_cv_model(image):
 
+    image = image.convert("RGB")
+
     img_byte_arr = io.BytesIO()
     image.save(img_byte_arr, format='JPEG')
     img_byte_arr = img_byte_arr.getvalue()
