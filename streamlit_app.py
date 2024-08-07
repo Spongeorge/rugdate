@@ -1,19 +1,38 @@
 import streamlit as st
 from PIL import Image
-import gdown
-from torchvision import transforms
 import requests
-from huggingface_hub import get_inference_endpoint
+import io
+import json
+
 
 CONSTANT_MEAN_YEAR = 1610.1647039974473
-CONSTANT_STD_YER = 389.20546577157154
+CONSTANT_STD_YEAR = 389.20546577157154
+
+API_URL = "https://zc4u7gor8e17vbi9.us-east-1.aws.endpoints.huggingface.cloud"
+
+headers = {
+	"Accept" : "application/json",
+	"Content-Type": "image/jpeg"
+}
+
+parameters = {
+    "function_to_apply": "none"
+}
 
 def pass_to_cv_model(image):
-    endpoint = get_inference_endpoint("vit-textile-dating-lube-kkf")
 
-    outputs = endpoint.client.image_classification(image)
+    img_byte_arr = io.BytesIO()
+    image.save(img_byte_arr, format='JPEG')
+    img_byte_arr = img_byte_arr.getvalue()
 
-    return [(output * CONSTANT_STD_YER) + CONSTANT_MEAN_YEAR for output in outputs]
+    response = requests.post(API_URL, headers=headers, params=parameters, data=img_byte_arr)
+    content = json.loads(response.content)
+
+    outputs = [(x['score'] * CONSTANT_STD_YEAR) + CONSTANT_MEAN_YEAR for x in content]
+
+    outputs = [int("{:.0f}".format(output)) for output in outputs]
+
+    return f"{outputs[1]}-{outputs[0]}"
 
 
 def main():
@@ -22,39 +41,41 @@ def main():
 
     st.write("Upload an image or select one of the test  images.")
 
-    uploaded_image = st.file_uploader("Upload:", type=["jpg", "jpeg", "png"])
+    if 'selected_image' not in st.session_state:
+        st.session_state.selected_image = None
+
+    st.session_state.uploaded_image = st.file_uploader("Upload:", type=["jpg", "jpeg", "png"])
 
     st.write("Or choose a test image:")
     sample_image_1 = "sample1.jpg"
     sample_image_2 = "sample2.jpg"
     sample_image_3 = "sample3.jpg"
 
-
+    selected_image = None
 
     col1, col2, col3 = st.columns(3)
     with col1:
-        if st.button("Chinese insignia, 1500s"):
-            selected_image = Image.open(sample_image_1)
+        if st.button("Egyptian Textile, 500-700"):
+            st.session_state.selected_image = Image.open(sample_image_1)
         st.image(Image.open(sample_image_1))
     with col2:
-        if st.button("Spanish silk, late 1500s"):
-            selected_image = Image.open(sample_image_2)
+        if st.button("Iranian Khorjin, 1870-1900"):
+            st.session_state.selected_image = Image.open(sample_image_2)
         st.image(Image.open(sample_image_2))
     with col3:
-        if st.button("Italian silk, late 1600s"):
-            selected_image = Image.open(sample_image_3)
+        if st.button("Italian Silk, late 1600s"):
+            st.session_state.selected_image = Image.open(sample_image_3)
         st.image(Image.open(sample_image_3))
 
-    # Display uploaded image or selected sample image
-    if uploaded_image:
-        image = Image.open(uploaded_image)
-        st.image(image, caption="Uploaded Image", use_column_width=True)
-        predicted_dates = pass_to_cv_model(image)
-        st.write(f"Predicted Date Range: {predicted_dates}")
-    elif 'selected_image' in locals():
-        st.image(selected_image, caption="Selected Sample Image", use_column_width=True)
-        predicted_dates = pass_to_cv_model(selected_image)
-        st.write(f"Predicted Date Range: {predicted_dates}")
+    image = Image.open(st.session_state.uploaded_image) if st.session_state.uploaded_image else st.session_state.selected_image
+    if image:
+        st.image(image, caption="Selected Image", use_column_width=True)
+        if st.button("Date this textile"):
+
+            with st.spinner("Running inference..."):
+                predicted_dates = pass_to_cv_model(image)
+
+            st.write(f"Predicted Date Range: {predicted_dates}")
     else:
         st.write("No image uploaded or selected.")
 
