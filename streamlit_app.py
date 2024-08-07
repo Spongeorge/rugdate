@@ -3,6 +3,7 @@ from PIL import Image
 import requests
 import io
 import json
+import time
 
 
 CONSTANT_MEAN_YEAR = 1610.1647039974473
@@ -36,6 +37,10 @@ def pass_to_cv_model(image):
 
 
 def main():
+
+    if not check_endpoint_status():
+        spin_up_endpoint()
+        wait_for_endpoint()
 
     st.title("Rug Date Prediction")
 
@@ -78,6 +83,38 @@ def main():
             st.write(f"Predicted Date Range: {predicted_dates}")
     else:
         st.write("No image uploaded or selected.")
+
+def check_endpoint_status():
+    """Check if the endpoint is available."""
+    try:
+        response = requests.get(API_URL, headers=headers)
+        if response.status_code == 200:
+            return True
+        return False
+    except Exception as e:
+        st.error(f"Error checking endpoint status: {e}")
+        return False
+
+def spin_up_endpoint():
+    """Send a dummy request to spin up the endpoint."""
+    dummy_data = {
+        "inputs": "This is a test input to spin up the instance."
+    }
+    try:
+        response = requests.post(API_URL, headers=headers, json=dummy_data)
+        if response.status_code == 200:
+            return True
+        return False
+    except Exception as e:
+        st.error(f"Error spinning up endpoint: {e}")
+        return False
+
+def wait_for_endpoint():
+    """Wait until the endpoint is fully available."""
+    with st.spinner("Waiting for the endpoint to be ready..."):
+        while not check_endpoint_status():
+            time.sleep(5)
+    st.write("Endpoint is ready.")
 
 if __name__ == "__main__":
     main()
