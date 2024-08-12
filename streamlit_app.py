@@ -1,10 +1,16 @@
-import streamlit as st
-from PIL import Image
-import requests
 import io
 import json
+import random
+import requests
+import streamlit as st
+import string
 import time
+from PIL import Image
+from captcha.image import ImageCaptcha
 
+length_captcha = 4
+width = 200
+height = 150
 
 CONSTANT_MEAN_YEAR = 1610.1647039974473
 CONSTANT_STD_YEAR = 389.20546577157154
@@ -19,6 +25,44 @@ headers = {
 parameters = {
     "function_to_apply": "none"
 }
+
+
+def captcha_control():
+    if 'controllo' not in st.session_state or st.session_state['controllo'] == False:
+        st.title("Solve Captcha to Create an Endpoint")
+
+        # define the session state for control if the captcha is correct
+        st.session_state['controllo'] = False
+        col1, col2 = st.columns(2)
+
+        # define the session state for the captcha text because it doesn't change during refreshes
+        if 'Captcha' not in st.session_state:
+            st.session_state['Captcha'] = ''.join(
+                random.choices(string.ascii_uppercase + string.digits, k=length_captcha))
+        print("the captcha is: ", st.session_state['Captcha'])
+
+        image = ImageCaptcha(width=width, height=height)
+        data = image.generate(st.session_state['Captcha'])
+        col1.image(data)
+        capta2_text = col2.text_area('Enter captcha text', height=30)
+
+        if st.button("Verify the code"):
+            print(capta2_text, st.session_state['Captcha'])
+            capta2_text = capta2_text.replace(" ", "")
+            if st.session_state['Captcha'].lower() == capta2_text.lower().strip():
+                del st.session_state['Captcha']
+                col1.empty()
+                col2.empty()
+                st.session_state['controllo'] = True
+                st.experimental_rerun()
+            else:
+                st.error("🚨 Il codice captcha è errato, riprova")
+                del st.session_state['Captcha']
+                del st.session_state['controllo']
+                st.experimental_rerun()
+        else:
+            # wait for the button click
+            st.stop()
 
 def pass_to_cv_model(image):
 
@@ -119,4 +163,7 @@ def wait_for_endpoint():
     st.write("Endpoint is ready.")
 
 if __name__ == "__main__":
-    main()
+    if 'controllo' not in st.session_state or st.session_state['controllo'] == False:
+        captcha_control()
+    else:
+        main()
