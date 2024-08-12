@@ -56,10 +56,9 @@ def captcha_control():
                 st.session_state['controllo'] = True
                 st.experimental_rerun()
             else:
-                st.error("🚨 Il codice captcha è errato, riprova")
+                st.error("🚨 Incorrect Captcha, Try Again")
                 del st.session_state['Captcha']
                 del st.session_state['controllo']
-                st.experimental_rerun()
         else:
             # wait for the button click
             st.stop()
