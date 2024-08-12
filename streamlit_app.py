@@ -54,7 +54,7 @@ def captcha_control():
                 col1.empty()
                 col2.empty()
                 st.session_state['controllo'] = True
-                st.experimental_rerun()
+             
             else:
                 st.error("🚨 Incorrect Captcha, Try Again")
                 del st.session_state['Captcha']
