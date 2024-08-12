@@ -54,11 +54,12 @@ def captcha_control():
                 col1.empty()
                 col2.empty()
                 st.session_state['controllo'] = True
-             
+                st.rerun()
             else:
                 st.error("🚨 Incorrect Captcha, Try Again")
                 del st.session_state['Captcha']
                 del st.session_state['controllo']
+                st.rerun()
         else:
             # wait for the button click
             st.stop()
